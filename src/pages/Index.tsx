@@ -1,14 +1,51 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import LandingPage from "@/components/LandingPage";
+import ReportCreator from "@/components/ReportCreator";
+import ReportEditor from "@/components/ReportEditor";
+
+type AppState = "landing" | "creator" | "editor";
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentState, setCurrentState] = useState<AppState>("landing");
+  const [reportData, setReportData] = useState(null);
+
+  const handleGetStarted = () => {
+    setCurrentState("creator");
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentState("landing");
+    setReportData(null);
+  };
+
+  const handleReportGenerated = (data: any) => {
+    setReportData(data);
+    setCurrentState("editor");
+  };
+
+  const handleBackToCreator = () => {
+    setCurrentState("creator");
+  };
+
+  if (currentState === "creator") {
+    return (
+      <ReportCreator 
+        onBack={handleBackToLanding}
+        onReportGenerated={handleReportGenerated}
+      />
+    );
+  }
+
+  if (currentState === "editor" && reportData) {
+    return (
+      <ReportEditor 
+        reportData={reportData}
+        onBack={handleBackToCreator}
+      />
+    );
+  }
+
+  return <LandingPage onGetStarted={handleGetStarted} />;
 };
 
 export default Index;
