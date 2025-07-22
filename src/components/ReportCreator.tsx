@@ -38,6 +38,7 @@ const ReportCreator = ({ onBack, onReportGenerated }: ReportCreatorProps) => {
         implementation: generateImplementation(),
         results: generateResults(),
         conclusion: generateConclusion(),
+        diagrams: generateDiagrams(),
         references: generateReferences()
       };
       
@@ -205,6 +206,70 @@ Potential areas for future enhancement include:
 
 ### Final Remarks
 The project contributes valuable insights to the field and provides a solid foundation for future research and development. The implemented solution offers practical benefits for users while advancing the state of the art in the domain.`;
+  };
+
+  const generateDiagrams = () => {
+    return `## System Diagrams
+
+### Architecture Diagram
+\`\`\`mermaid
+graph TB
+    A[User Interface] --> B[Application Layer]
+    B --> C[Business Logic]
+    C --> D[Data Access Layer]
+    D --> E[Database]
+    
+    F[Authentication Service] --> B
+    G[External APIs] --> C
+    H[Cache Layer] --> C
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+\`\`\`
+
+### Data Flow Diagram
+\`\`\`mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+    
+    U->>UI: Input Data
+    UI->>API: Send Request
+    API->>DB: Query Data
+    DB->>API: Return Results
+    API->>UI: Send Response
+    UI->>U: Display Results
+\`\`\`
+
+### Component Structure
+\`\`\`mermaid
+graph LR
+    A[Main Application] --> B[Authentication Module]
+    A --> C[Dashboard Module]
+    A --> D[Report Generator]
+    A --> E[Export Module]
+    
+    B --> F[Login Component]
+    B --> G[Registration Component]
+    
+    C --> H[Statistics View]
+    C --> I[User Profile]
+    
+    D --> J[Content Generator]
+    D --> K[Template Engine]
+    
+    E --> L[PDF Export]
+    E --> M[Word Export]
+    
+    style A fill:#bbdefb
+    style D fill:#c8e6c9
+    style E fill:#ffcdd2
+\`\`\``;
   };
 
   const generateReferences = () => {
