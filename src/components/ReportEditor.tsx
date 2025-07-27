@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText, Download, Edit, ArrowLeft, Save, RefreshCw, Loader2, Network } from "lucide-react";
 import { toast } from "sonner";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 
 interface ReportEditorProps {
   reportData: any;
@@ -110,35 +111,181 @@ The project covers comprehensive analysis, design, implementation, and evaluatio
     return variations[randomIndex];
   };
 
-  const generateWordDocument = () => {
-    const reportContent = `
-${editableReport.title}
+  const generateWordDocument = async () => {
+    try {
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.title,
+                  bold: true,
+                  size: 32,
+                }),
+              ],
+              heading: HeadingLevel.TITLE,
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "ABSTRACT",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.abstract,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "INTRODUCTION",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.introduction,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "METHODOLOGY",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.methodology,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "IMPLEMENTATION",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.implementation,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "RESULTS",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.results,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "CONCLUSION",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.conclusion,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "REFERENCES",
+                  bold: true,
+                  size: 24,
+                }),
+              ],
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: editableReport.references,
+                }),
+              ],
+            }),
+          ],
+        }],
+      });
 
-ABSTRACT
-${editableReport.abstract}
-
-${editableReport.introduction}
-
-${editableReport.methodology}
-
-${editableReport.implementation}
-
-${editableReport.results}
-
-${editableReport.conclusion}
-
-${editableReport.references}
-    `;
-
-    const blob = new Blob([reportContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${editableReport.title.replace(/\s+/g, '_')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const blob = await Packer.toBlob(doc);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${editableReport.title.replace(/\s+/g, '_')}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Report exported as Word document!");
+    } catch (error) {
+      toast.error("Failed to export document");
+      console.error(error);
+    }
   };
 
   return (
@@ -176,7 +323,7 @@ ${editableReport.references}
             </Button>
             <Button onClick={generateWordDocument} variant="hero" className="flex items-center gap-2">
               <Download className="h-4 w-4" />
-              Export (.txt)
+              Export (.docx)
             </Button>
           </div>
         </div>
