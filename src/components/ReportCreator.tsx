@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText, Brain, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { pipeline } from "@huggingface/transformers";
 
 interface ReportCreatorProps {
   onBack: () => void;
@@ -28,8 +29,33 @@ const ReportCreator = ({ onBack, onReportGenerated }: ReportCreatorProps) => {
 
     setIsGenerating(true);
     
-    // Simulate AI generation process
-    setTimeout(() => {
+    try {
+      // Initialize ML model for text generation
+      const generator = await pipeline('text-generation', 'Xenova/gpt2', {
+        device: 'cpu',
+        dtype: 'fp32'
+      });
+
+      const generatedReport = {
+        title: formData.title,
+        abstract: await generateAbstractML(formData.problemStatement, generator),
+        introduction: await generateIntroductionML(formData.title, formData.problemStatement, generator),
+        methodology: generateMethodology(),
+        implementation: generateImplementation(),
+        results: generateResults(),
+        conclusion: await generateConclusionML(formData.title, formData.problemStatement, generator),
+        diagrams: generateDiagrams(),
+        references: generateReferences()
+      };
+      
+      onReportGenerated(generatedReport);
+      setIsGenerating(false);
+      toast.success("Report generated successfully with AI!");
+    } catch (error) {
+      console.error('ML Generation error:', error);
+      toast.error("ML generation failed, using fallback templates");
+      
+      // Fallback to template generation
       const generatedReport = {
         title: formData.title,
         abstract: generateAbstract(formData.problemStatement),
@@ -45,7 +71,7 @@ const ReportCreator = ({ onBack, onReportGenerated }: ReportCreatorProps) => {
       onReportGenerated(generatedReport);
       setIsGenerating(false);
       toast.success("Report generated successfully!");
-    }, 3000);
+    }
   };
 
   const generateAbstract = (problem: string) => {
@@ -292,6 +318,68 @@ graph LR
 8. Martinez, D. (2022). Agile Development Methodologies in Practice. Software Engineering Today, 9(3), 78-92.`;
   };
 
+  // ML-powered generation functions
+  const generateAbstractML = async (problem: string, generator: any) => {
+    try {
+      const prompt = `Write a professional abstract for a technical project that addresses: ${problem}. Abstract:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 150,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      // Extract and clean the generated text
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 50) {
+        return generateAbstract(problem); // Fallback to template
+      }
+      return generated;
+    } catch (error) {
+      console.error('ML Abstract generation failed:', error);
+      return generateAbstract(problem);
+    }
+  };
+
+  const generateIntroductionML = async (title: string, problem: string, generator: any) => {
+    try {
+      const prompt = `Write a detailed introduction for a project titled "${title}" that addresses: ${problem}. Include background, objectives, and scope. Introduction:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 100) {
+        return generateIntroduction(title, problem); // Fallback to template
+      }
+      return `## Introduction\n\n${generated}`;
+    } catch (error) {
+      console.error('ML Introduction generation failed:', error);
+      return generateIntroduction(title, problem);
+    }
+  };
+
+  const generateConclusionML = async (title: string, problem: string, generator: any) => {
+    try {
+      const prompt = `Write a comprehensive conclusion for a project titled "${title}" that solved: ${problem}. Include key achievements and future work. Conclusion:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 180,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 80) {
+        return generateConclusion(); // Fallback to template
+      }
+      return `## Conclusion\n\n${generated}`;
+    } catch (error) {
+      console.error('ML Conclusion generation failed:', error);
+      return generateConclusion();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle p-4">
       <div className="container mx-auto max-w-4xl">
@@ -382,9 +470,9 @@ graph LR
                   <span className="font-medium">AI is generating your report...</span>
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>• Analyzing your project requirements</p>
-                  <p>• Generating structured content sections</p>
-                  <p>• Creating methodology and implementation details</p>
+                  <p>• Loading GPT-2 language model...</p>
+                  <p>• Generating AI-powered content sections</p>
+                  <p>• Processing with Hugging Face Transformers</p>
                   <p>• Finalizing report structure</p>
                 </div>
               </div>
