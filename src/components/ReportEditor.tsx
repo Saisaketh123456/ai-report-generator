@@ -5,6 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileText, Download, Edit, ArrowLeft, Save, RefreshCw, Loader2, Network } from "lucide-react";
 import { toast } from "sonner";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
+import diagramArchitecture from "@/assets/diagram-architecture.jpg";
+import diagramDataflow from "@/assets/diagram-dataflow.jpg";
+import diagramNetwork from "@/assets/diagram-network.jpg";
 
 interface ReportEditorProps {
   reportData: any;
@@ -366,28 +369,47 @@ The project covers comprehensive analysis, design, implementation, and evaluatio
               <CardContent>
                 {activeSection === 'diagrams' ? (
                   <div className="space-y-6">
-                    <Textarea
-                      value={editableReport[activeSection]}
-                      onChange={(e) => updateSection(activeSection, e.target.value)}
-                      className="min-h-96 resize-none font-mono text-sm leading-relaxed"
-                      placeholder="Enter Mermaid diagram code..."
-                    />
-                    <div className="bg-muted/30 rounded-lg p-4">
-                      <h4 className="font-semibold mb-3">Diagram Preview:</h4>
-                      <div className="bg-background rounded border p-4">
-                        {editableReport[activeSection] && editableReport[activeSection].includes('```mermaid') ? (
-                          <div className="prose prose-slate max-w-none">
-                            <div dangerouslySetInnerHTML={{ 
-                              __html: editableReport[activeSection]
-                                .replace(/```mermaid\n/g, '<div class="mermaid">')
-                                .replace(/\n```/g, '</div>')
-                            }} />
-                          </div>
-                        ) : (
-                          <p className="text-muted-foreground text-sm">
-                            Add Mermaid diagram code to see preview. Start with ```mermaid and end with ```
-                          </p>
-                        )}
+                    <div className="grid gap-6">
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">System Architecture Diagram</h3>
+                        <div className="bg-background rounded border p-4">
+                          <img 
+                            src={diagramArchitecture} 
+                            alt="System Architecture Diagram" 
+                            className="w-full h-auto rounded-lg shadow-sm"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          This diagram illustrates the overall system architecture showing the relationships between different components.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Data Flow Diagram</h3>
+                        <div className="bg-background rounded border p-4">
+                          <img 
+                            src={diagramDataflow} 
+                            alt="Data Flow Diagram" 
+                            className="w-full h-auto rounded-lg shadow-sm"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          This diagram shows how data flows through the system from input to output.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Network Topology Diagram</h3>
+                        <div className="bg-background rounded border p-4">
+                          <img 
+                            src={diagramNetwork} 
+                            alt="Network Topology Diagram" 
+                            className="w-full h-auto rounded-lg shadow-sm"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          This diagram depicts the network infrastructure and connectivity between system components.
+                        </p>
                       </div>
                     </div>
                   </div>
