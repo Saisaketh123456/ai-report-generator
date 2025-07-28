@@ -11,9 +11,11 @@ import { pipeline } from "@huggingface/transformers";
 interface ReportCreatorProps {
   onBack: () => void;
   onReportGenerated: (reportData: any) => void;
+  userEmail: string;
+  onSignOut: () => void;
 }
 
-const ReportCreator = ({ onBack, onReportGenerated }: ReportCreatorProps) => {
+const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: ReportCreatorProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -384,14 +386,24 @@ graph LR
     <div className="min-h-screen bg-gradient-subtle p-4">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <div className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Create New Report</h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <div className="flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl font-bold">Create New Report</h1>
+            </div>
+          </div>
+          
+          {/* User Info */}
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-sm font-medium">{userEmail}</p>
+            <Button variant="ghost" size="sm" onClick={onSignOut} className="text-sm text-muted-foreground hover:text-destructive">
+              Sign Out
+            </Button>
           </div>
         </div>
 

@@ -9,18 +9,27 @@ type AppState = "landing" | "auth" | "creator" | "editor";
 const Index = () => {
   const [currentState, setCurrentState] = useState<AppState>("landing");
   const [reportData, setReportData] = useState(null);
+  const [userEmail, setUserEmail] = useState<string>("");
 
   const handleGetStarted = () => {
     setCurrentState("auth");
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = (email: string) => {
+    setUserEmail(email);
     setCurrentState("creator");
   };
 
   const handleBackToLanding = () => {
     setCurrentState("landing");
     setReportData(null);
+    setUserEmail("");
+  };
+
+  const handleSignOut = () => {
+    setCurrentState("landing");
+    setReportData(null);
+    setUserEmail("");
   };
 
   const handleReportGenerated = (data: any) => {
@@ -46,6 +55,8 @@ const Index = () => {
       <ReportCreator 
         onBack={handleBackToLanding}
         onReportGenerated={handleReportGenerated}
+        userEmail={userEmail}
+        onSignOut={handleSignOut}
       />
     );
   }

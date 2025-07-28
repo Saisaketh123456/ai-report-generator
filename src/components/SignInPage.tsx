@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 interface SignInPageProps {
   onBack: () => void;
-  onSignIn: () => void;
+  onSignIn: (email: string) => void;
 }
 
 const SignInPage = ({ onBack, onSignIn }: SignInPageProps) => {
@@ -32,7 +32,7 @@ const SignInPage = ({ onBack, onSignIn }: SignInPageProps) => {
       return;
     }
     toast.success("Signed in successfully!");
-    onSignIn();
+    onSignIn(signInData.email);
   };
 
   const handleSignUp = (e: React.FormEvent) => {
@@ -46,7 +46,7 @@ const SignInPage = ({ onBack, onSignIn }: SignInPageProps) => {
       return;
     }
     toast.success("Account created successfully!");
-    onSignIn();
+    onSignIn(signUpData.email);
   };
 
   return (
