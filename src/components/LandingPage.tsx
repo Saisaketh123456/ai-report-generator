@@ -7,9 +7,10 @@ import typingImage from "@/assets/typing-reports.jpg";
 
 interface LandingPageProps {
   onGetStarted?: () => void;
+  onViewSample?: () => void;
 }
 
-const LandingPage = ({ onGetStarted }: LandingPageProps = {}) => {
+const LandingPage = ({ onGetStarted, onViewSample }: LandingPageProps) => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -54,7 +55,7 @@ const LandingPage = ({ onGetStarted }: LandingPageProps = {}) => {
                 <Zap className="mr-3 h-5 w-5" />
                 Start Generating Reports
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4 font-semibold border-2">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-4 font-semibold border-2" onClick={onViewSample}>
                 <FileText className="mr-3 h-5 w-5" />
                 View Sample Report
               </Button>
