@@ -506,29 +506,33 @@ This project successfully addresses the identified challenges through innovative
         {/* Preview Card */}
         <Card className="mt-6 shadow-card">
           <CardHeader>
-            <CardTitle>Report Preview</CardTitle>
+            <CardTitle className="text-xl font-semibold text-primary">Report Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-slate max-w-none">
-              <h1 className="text-3xl font-bold mb-6">{editableReport.title}</h1>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-8 shadow-sm">
+              <h1 className="text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white border-b-2 border-primary pb-4">
+                {editableReport.title}
+              </h1>
               {activeSection === 'diagrams' && editableReport[activeSection] && editableReport[activeSection].includes('```mermaid') ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {editableReport[activeSection].split('### ').map((section, index) => {
                     if (index === 0) return null; // Skip first empty section
                     const [title, ...content] = section.split('\n');
                     const contentText = content.join('\n');
                     
                     return (
-                      <div key={index} className="border rounded-lg p-4">
-                        <h3 className="font-semibold mb-3">{title}</h3>
+                      <div key={index} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-6 shadow-sm">
+                        <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-gray-200 border-b border-gray-300 dark:border-gray-600 pb-2">
+                          {title}
+                        </h3>
                         {contentText.includes('```mermaid') ? (
-                          <div className="bg-background rounded border p-4">
-                            <div className="mermaid-preview bg-white p-4 rounded border-2 border-dashed border-gray-300 min-h-32 flex items-center justify-center">
-                              <span className="text-muted-foreground">📊 Mermaid Diagram Rendered Here</span>
+                          <div className="bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-lg border-2 border-dashed border-blue-200 dark:border-gray-500 min-h-40 flex items-center justify-center">
+                              <span className="text-blue-600 dark:text-blue-400 text-lg font-medium">📊 Mermaid Diagram Rendered Here</span>
                             </div>
                           </div>
                         ) : (
-                          <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/30 rounded-lg p-4">
+                          <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-7 bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
                             {contentText}
                           </div>
                         )}
@@ -537,12 +541,35 @@ This project successfully addresses the identified challenges through innovative
                   })}
                 </div>
               ) : (
-                <div 
-                  className="prose prose-slate max-w-none text-sm leading-relaxed bg-muted/30 rounded-lg p-4"
-                  dangerouslySetInnerHTML={{ 
-                    __html: renderMarkdown(editableReport[activeSection] || '') 
-                  }}
-                />
+                <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
+                  <div 
+                    className="text-gray-800 dark:text-gray-200 leading-8 space-y-6"
+                    style={{
+                      fontSize: '16px',
+                      lineHeight: '1.75',
+                      fontFamily: 'system-ui, -apple-system, sans-serif'
+                    }}
+                    dangerouslySetInnerHTML={{ 
+                      __html: renderMarkdown(editableReport[activeSection] || '').replace(
+                        /<h1/g, '<h1 class="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2"'
+                      ).replace(
+                        /<h2/g, '<h2 class="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white"'
+                      ).replace(
+                        /<h3/g, '<h3 class="text-lg font-bold mb-3 mt-4 text-gray-900 dark:text-white"'
+                      ).replace(
+                        /<p/g, '<p class="mb-4 text-gray-700 dark:text-gray-300"'
+                      ).replace(
+                        /<ul/g, '<ul class="mb-4 space-y-2 pl-6"'
+                      ).replace(
+                        /<li/g, '<li class="text-gray-700 dark:text-gray-300 list-disc"'
+                      ).replace(
+                        /<strong/g, '<strong class="font-bold text-gray-900 dark:text-white"'
+                      ).replace(
+                        /<em/g, '<em class="italic text-gray-800 dark:text-gray-200"'
+                      )
+                    }}
+                  />
+                </div>
               )}
             </div>
           </CardContent>
