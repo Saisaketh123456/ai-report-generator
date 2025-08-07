@@ -48,11 +48,80 @@ const Index = () => {
       projectType: "Machine Learning",
       sections: {
         abstract: "This project presents an innovative AI-powered smart traffic management system that utilizes machine learning algorithms to optimize traffic flow in urban environments. The system employs real-time data analysis, predictive modeling, and adaptive signal control to reduce congestion by an average of 30% while minimizing environmental impact.",
-        introduction: "Traffic congestion is one of the most pressing challenges facing modern cities. With urbanization continuing to accelerate globally, traditional traffic management systems are becoming increasingly inadequate. This project proposes a comprehensive solution that leverages artificial intelligence and machine learning to create a responsive, efficient traffic management ecosystem.",
-        methodology: "Our approach combines multiple data sources including traffic cameras, sensors, GPS data, and weather information. We employ a hybrid machine learning model consisting of convolutional neural networks for image processing, recurrent neural networks for temporal pattern recognition, and reinforcement learning for optimal decision making.",
-        implementation: "The system architecture consists of three main components: 1) Data Collection Layer - IoT sensors and cameras deployed at key intersections, 2) Processing Layer - Cloud-based ML pipeline for real-time analysis, 3) Control Layer - Adaptive traffic signal controllers and routing recommendations.",
-        results: "Initial deployment in a pilot area showed remarkable improvements: 30% reduction in average travel time, 25% decrease in fuel consumption, 40% reduction in emissions, and 90% improvement in emergency vehicle response times. The system demonstrated excellent scalability and reliability.",
-        conclusion: "The AI-powered smart traffic management system represents a significant advancement in urban infrastructure. The project successfully demonstrates that machine learning can effectively address complex traffic optimization challenges while providing measurable benefits to both citizens and the environment.",
+        introduction: `## Introduction
+
+Traffic congestion is one of the most pressing challenges facing modern cities. With urbanization continuing to accelerate globally, traditional traffic management systems are becoming increasingly inadequate.
+
+### Background
+Traditional traffic management systems rely on fixed timing patterns that cannot adapt to changing traffic conditions. This project proposes a comprehensive solution that leverages artificial intelligence and machine learning to create a responsive, efficient traffic management ecosystem.
+
+### Objectives
+- Reduce traffic congestion through intelligent signal optimization
+- Minimize environmental impact through improved traffic flow
+- Enhance emergency vehicle response times
+- Provide real-time traffic insights and recommendations`,
+        methodology: `## Methodology
+
+Our approach combines multiple data sources including traffic cameras, sensors, GPS data, and weather information.
+
+### Machine Learning Models
+We employ a hybrid machine learning model consisting of:
+- **Convolutional Neural Networks** for image processing
+- **Recurrent Neural Networks** for temporal pattern recognition  
+- **Reinforcement Learning** for optimal decision making
+
+### Data Collection
+- Real-time traffic camera feeds
+- IoT sensor networks at intersections
+- GPS data from mobile devices
+- Weather and environmental conditions`,
+        implementation: `## Implementation
+
+The system architecture consists of three main components:
+
+### 1. Data Collection Layer
+- IoT sensors and cameras deployed at key intersections
+- Real-time data aggregation and preprocessing
+- Quality assurance and data validation
+
+### 2. Processing Layer  
+- Cloud-based ML pipeline for real-time analysis
+- Predictive modeling for traffic patterns
+- Decision engine for signal optimization
+
+### 3. Control Layer
+- Adaptive traffic signal controllers
+- Dynamic routing recommendations
+- Emergency vehicle priority systems`,
+        results: `## Results and Evaluation
+
+Initial deployment in a pilot area showed remarkable improvements:
+
+### Performance Metrics
+- **30% reduction** in average travel time
+- **25% decrease** in fuel consumption  
+- **40% reduction** in emissions
+- **90% improvement** in emergency vehicle response times
+
+### System Performance
+The system demonstrated excellent scalability and reliability with:
+- 99.8% uptime during the testing period
+- Real-time processing of over 10,000 data points per second
+- Successful handling of peak traffic conditions`,
+        conclusion: `## Conclusion
+
+The AI-powered smart traffic management system represents a significant advancement in urban infrastructure. The project successfully demonstrates that machine learning can effectively address complex traffic optimization challenges while providing measurable benefits to both citizens and the environment.
+
+### Key Achievements
+- Successfully reduced traffic congestion by 30%
+- Improved air quality through reduced emissions
+- Enhanced emergency response capabilities
+- Demonstrated system scalability and reliability
+
+### Future Work
+- Expansion to city-wide deployment
+- Integration with public transportation systems
+- Advanced predictive analytics for long-term planning`,
         diagrams: "System Architecture, Data Flow Analysis, Network Topology",
         references: "Academic and industry references supporting the methodology and implementation approach."
       }

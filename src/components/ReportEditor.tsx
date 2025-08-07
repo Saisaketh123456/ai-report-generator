@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileText, Download, Edit, ArrowLeft, Save, RefreshCw, Loader2, Network } from "lucide-react";
 import { toast } from "sonner";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
+import { renderMarkdown } from "@/lib/markdownRenderer";
 import diagramArchitecture from "@/assets/diagram-architecture.jpg";
 import diagramDataflow from "@/assets/diagram-dataflow.jpg";
 import diagramNetwork from "@/assets/diagram-network.jpg";
@@ -467,9 +468,12 @@ The project covers comprehensive analysis, design, implementation, and evaluatio
                   })}
                 </div>
               ) : (
-                <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/30 rounded-lg p-4">
-                  {editableReport[activeSection]}
-                </div>
+                <div 
+                  className="prose prose-slate max-w-none text-sm leading-relaxed bg-muted/30 rounded-lg p-4"
+                  dangerouslySetInnerHTML={{ 
+                    __html: renderMarkdown(editableReport[activeSection] || '') 
+                  }}
+                />
               )}
             </div>
           </CardContent>
