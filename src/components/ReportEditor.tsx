@@ -6,9 +6,7 @@ import { FileText, Download, Edit, ArrowLeft, Save, RefreshCw, Loader2, Network 
 import { toast } from "sonner";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import { renderMarkdown } from "@/lib/markdownRenderer";
-import diagramArchitecture from "@/assets/diagram-architecture.jpg";
-import diagramDataflow from "@/assets/diagram-dataflow.jpg";
-import diagramNetwork from "@/assets/diagram-network.jpg";
+import Mermaid from "@/components/ui/mermaid";
 
 interface ReportEditorProps {
   reportData: any;
@@ -165,6 +163,130 @@ Extensive validation confirms the effectiveness of the proposed approach in addr
 
 **Conclusion**
 This project successfully addresses the identified challenges through innovative approaches and comprehensive implementation. The developed solution demonstrates significant improvements in performance, reliability, and user experience. The robust architecture and modern technology stack ensure long-term viability and scalability. The findings contribute valuable insights to the field and establish a solid foundation for future research and development initiatives.`
+      ],
+      diagrams: [
+        `## System Diagrams
+
+### Architecture Diagram
+\`\`\`mermaid
+graph TB
+    A[User Interface] --> B[Application Layer]
+    B --> C[Business Logic]
+    C --> D[Data Access Layer]
+    D --> E[Database]
+    
+    F[Authentication Service] --> B
+    G[External APIs] --> C
+    H[Cache Layer] --> C
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+\`\`\`
+
+### Data Flow Diagram
+\`\`\`mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+    
+    U->>UI: Input Data
+    UI->>API: Send Request
+    API->>DB: Query Data
+    DB->>API: Return Results
+    API->>UI: Send Response
+    UI->>U: Display Results
+\`\`\`
+
+### Component Structure
+\`\`\`mermaid
+graph LR
+    A[Main Application] --> B[Authentication Module]
+    A --> C[Dashboard Module]
+    A --> D[Report Generator]
+    A --> E[Export Module]
+    
+    B --> F[Login Component]
+    B --> G[Registration Component]
+    
+    C --> H[Statistics View]
+    C --> I[User Profile]
+    
+    D --> J[Template Engine]
+    D --> K[Content Generator]
+    
+    E --> L[PDF Export]
+    E --> M[Word Export]
+\`\`\``,
+        `## Technical Diagrams
+
+### System Architecture
+\`\`\`mermaid
+graph TD
+    Client[Client Application] --> LB[Load Balancer]
+    LB --> Web1[Web Server 1]
+    LB --> Web2[Web Server 2]
+    
+    Web1 --> App[Application Server]
+    Web2 --> App
+    
+    App --> Cache[Redis Cache]
+    App --> DB[(Database)]
+    App --> Queue[Message Queue]
+    
+    Queue --> Worker[Background Worker]
+    Worker --> DB
+    
+    style Client fill:#e3f2fd
+    style App fill:#f3e5f5
+    style DB fill:#e8f5e8
+\`\`\`
+
+### Data Processing Flow
+\`\`\`mermaid
+flowchart LR
+    Input[Input Data] --> Validation{Validation}
+    Validation -->|Valid| Processing[Data Processing]
+    Validation -->|Invalid| Error[Error Handler]
+    
+    Processing --> Transform[Data Transformation]
+    Transform --> Storage[(Data Storage)]
+    Storage --> Output[Output Generation]
+    
+    Error --> Log[Error Logging]
+    Log --> Notification[User Notification]
+\`\`\`
+
+### Entity Relationship
+\`\`\`mermaid
+erDiagram
+    USER ||--o{ REPORT : creates
+    USER {
+        int id
+        string name
+        string email
+        datetime created_at
+    }
+    REPORT ||--o{ SECTION : contains
+    REPORT {
+        int id
+        string title
+        string type
+        datetime created_at
+        int user_id
+    }
+    SECTION {
+        int id
+        string title
+        text content
+        int report_id
+        int order_index
+    }
+\`\`\``,
       ],
       references: [
         `**References**
@@ -437,60 +559,12 @@ This project successfully addresses the identified challenges through innovative
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {activeSection === 'diagrams' ? (
-                  <div className="space-y-6">
-                    <div className="grid gap-6">
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">System Architecture Diagram</h3>
-                        <div className="bg-background rounded border p-4">
-                          <img 
-                            src={diagramArchitecture} 
-                            alt="System Architecture Diagram" 
-                            className="w-full h-auto rounded-lg shadow-sm"
-                          />
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          This diagram illustrates the overall system architecture showing the relationships between different components.
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Data Flow Diagram</h3>
-                        <div className="bg-background rounded border p-4">
-                          <img 
-                            src={diagramDataflow} 
-                            alt="Data Flow Diagram" 
-                            className="w-full h-auto rounded-lg shadow-sm"
-                          />
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          This diagram shows how data flows through the system from input to output.
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Network Topology Diagram</h3>
-                        <div className="bg-background rounded border p-4">
-                          <img 
-                            src={diagramNetwork} 
-                            alt="Network Topology Diagram" 
-                            className="w-full h-auto rounded-lg shadow-sm"
-                          />
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          This diagram depicts the network infrastructure and connectivity between system components.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <Textarea
-                    value={editableReport[activeSection]}
-                    onChange={(e) => updateSection(activeSection, e.target.value)}
-                    className="min-h-96 resize-none font-mono text-sm leading-relaxed"
-                    placeholder={`Enter ${sections.find(s => s.id === activeSection)?.title.toLowerCase()} content...`}
-                  />
-                )}
+                <Textarea
+                  value={editableReport[activeSection]}
+                  onChange={(e) => updateSection(activeSection, e.target.value)}
+                  className="min-h-96 resize-none font-mono text-sm leading-relaxed"
+                  placeholder={`Enter ${sections.find(s => s.id === activeSection)?.title.toLowerCase()} content...`}
+                />
                 <div className="mt-4 text-sm text-muted-foreground">
                   {activeSection === 'diagrams' ? (
                     <p>Tip: Use Mermaid syntax for diagrams. Supported types: graph, sequenceDiagram, classDiagram, etc.</p>
@@ -526,10 +600,11 @@ This project successfully addresses the identified challenges through innovative
                           {title}
                         </h3>
                         {contentText.includes('```mermaid') ? (
-                          <div className="bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6">
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-lg border-2 border-dashed border-blue-200 dark:border-gray-500 min-h-40 flex items-center justify-center">
-                              <span className="text-blue-600 dark:text-blue-400 text-lg font-medium">📊 Mermaid Diagram Rendered Here</span>
-                            </div>
+                          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                            <Mermaid 
+                              chart={contentText.match(/```mermaid\n([\s\S]*?)\n```/)?.[1] || ''} 
+                              className="w-full"
+                            />
                           </div>
                         ) : (
                           <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-7 bg-white dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
