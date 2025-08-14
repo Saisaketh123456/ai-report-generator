@@ -32,20 +32,20 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
     setIsGenerating(true);
     
     try {
-      // Initialize ML model for text generation
-      const generator = await pipeline('text-generation', 'Xenova/gpt2', {
-        device: 'cpu',
+      // Initialize ML model for text generation using the updated model name
+      const generator = await pipeline('text-generation', 'onnx-community/gpt2', {
+        device: (navigator as any).gpu ? 'webgpu' : 'cpu',
         dtype: 'fp32'
       });
 
       const generatedReport = {
         title: formData.title,
-        abstract: await generateAbstractML(formData.problemStatement, generator),
-        introduction: await generateIntroductionML(formData.title, formData.problemStatement, generator),
-        methodology: generateMethodology(),
-        implementation: generateImplementation(),
-        results: generateResults(),
-        conclusion: await generateConclusionML(formData.title, formData.problemStatement, generator),
+        abstract: await generateAbstractML(formData.problemStatement, formData.projectType, generator),
+        introduction: await generateIntroductionML(formData.title, formData.problemStatement, formData.projectType, generator),
+        methodology: await generateMethodologyML(formData.title, formData.projectType, generator),
+        implementation: await generateImplementationML(formData.title, formData.projectType, generator),
+        results: await generateResultsML(formData.title, formData.projectType, generator),
+        conclusion: await generateConclusionML(formData.title, formData.problemStatement, formData.projectType, generator),
         diagrams: generateDiagrams(),
         references: generateReferences()
       };
@@ -321,9 +321,9 @@ graph LR
   };
 
   // ML-powered generation functions
-  const generateAbstractML = async (problem: string, generator: any) => {
+  const generateAbstractML = async (problem: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a professional abstract for a technical project that addresses: ${problem}. Abstract:`;
+      const prompt = `Write a professional abstract for a ${projectType.toLowerCase()} that addresses: ${problem}. Abstract:`;
       const result = await generator(prompt, {
         max_new_tokens: 150,
         temperature: 0.7,
@@ -342,9 +342,9 @@ graph LR
     }
   };
 
-  const generateIntroductionML = async (title: string, problem: string, generator: any) => {
+  const generateIntroductionML = async (title: string, problem: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a detailed introduction for a project titled "${title}" that addresses: ${problem}. Include background, objectives, and scope. Introduction:`;
+      const prompt = `Write a detailed introduction for a ${projectType.toLowerCase()} titled "${title}" that addresses: ${problem}. Include background, objectives, and scope. Introduction:`;
       const result = await generator(prompt, {
         max_new_tokens: 200,
         temperature: 0.7,
@@ -362,9 +362,69 @@ graph LR
     }
   };
 
-  const generateConclusionML = async (title: string, problem: string, generator: any) => {
+  const generateMethodologyML = async (title: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a comprehensive conclusion for a project titled "${title}" that solved: ${problem}. Include key achievements and future work. Conclusion:`;
+      const prompt = `Write a methodology section for a ${projectType.toLowerCase()} titled "${title}". Include research approach, system design, and implementation strategy. Methodology:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 100) {
+        return generateMethodology(); // Fallback to template
+      }
+      return `## Methodology\n\n${generated}`;
+    } catch (error) {
+      console.error('ML Methodology generation failed:', error);
+      return generateMethodology();
+    }
+  };
+
+  const generateImplementationML = async (title: string, projectType: string, generator: any) => {
+    try {
+      const prompt = `Write an implementation section for a ${projectType.toLowerCase()} titled "${title}". Include system architecture, key features, and challenges. Implementation:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 100) {
+        return generateImplementation(); // Fallback to template
+      }
+      return `## Implementation\n\n${generated}`;
+    } catch (error) {
+      console.error('ML Implementation generation failed:', error);
+      return generateImplementation();
+    }
+  };
+
+  const generateResultsML = async (title: string, projectType: string, generator: any) => {
+    try {
+      const prompt = `Write a results section for a ${projectType.toLowerCase()} titled "${title}". Include performance metrics, testing results, and evaluation. Results:`;
+      const result = await generator(prompt, {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        do_sample: true,
+      });
+      
+      let generated = result[0].generated_text.replace(prompt, '').trim();
+      if (generated.length < 100) {
+        return generateResults(); // Fallback to template
+      }
+      return `## Results\n\n${generated}`;
+    } catch (error) {
+      console.error('ML Results generation failed:', error);
+      return generateResults();
+    }
+  };
+
+  const generateConclusionML = async (title: string, problem: string, projectType: string, generator: any) => {
+    try {
+      const prompt = `Write a comprehensive conclusion for a ${projectType.toLowerCase()} titled "${title}" that solved: ${problem}. Include key achievements and future work in exactly 5 sentences. Conclusion:`;
       const result = await generator(prompt, {
         max_new_tokens: 180,
         temperature: 0.7,
@@ -373,12 +433,12 @@ graph LR
       
       let generated = result[0].generated_text.replace(prompt, '').trim();
       if (generated.length < 80) {
-        return generateConclusion(); // Fallback to template
+        return `This AI-powered technical report generation platform successfully addresses the challenges of traditional manual report writing through innovative automation. The system leverages cutting-edge technologies including Hugging Face Transformers and GPT-2 to deliver intelligent content generation with user-controlled editing capabilities. The implementation demonstrates significant improvements in efficiency, consistency, and quality while reducing the time required for professional documentation. The platform's modern architecture built with React, TypeScript, and Tailwind CSS ensures scalability and maintainability for diverse organizational needs. The project establishes a solid foundation for future AI-assisted content creation and contributes meaningfully to the transformation of technical communication workflows.`; // Fallback to 5-line conclusion
       }
-      return `## Conclusion\n\n${generated}`;
+      return generated;
     } catch (error) {
       console.error('ML Conclusion generation failed:', error);
-      return generateConclusion();
+      return `This AI-powered technical report generation platform successfully addresses the challenges of traditional manual report writing through innovative automation. The system leverages cutting-edge technologies including Hugging Face Transformers and GPT-2 to deliver intelligent content generation with user-controlled editing capabilities. The implementation demonstrates significant improvements in efficiency, consistency, and quality while reducing the time required for professional documentation. The platform's modern architecture built with React, TypeScript, and Tailwind CSS ensures scalability and maintainability for diverse organizational needs. The project establishes a solid foundation for future AI-assisted content creation and contributes meaningfully to the transformation of technical communication workflows.`;
     }
   };
 
