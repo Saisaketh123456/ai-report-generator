@@ -421,18 +421,88 @@ This ${projectType.toLowerCase()} encompasses the complete lifecycle from initia
 
   const generateMethodologyML = async (title: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a methodology section for a ${projectType.toLowerCase()} titled "${title}". Include research approach, system design, and implementation strategy. Methodology:`;
+      // Enhanced prompt for better methodology generation with clear structure
+      const prompt = `Write a comprehensive methodology section for a ${projectType} titled "${title}". 
+
+Structure the methodology with the following subsections:
+1. Research Approach - systematic investigation and analysis methods
+2. System Design - architectural patterns and design principles
+3. Implementation Strategy - development phases and technical approach
+4. Testing and Validation - quality assurance and evaluation methods
+
+Keep it professional and detailed. Methodology:
+
+### Research Approach
+The research methodology follows a`;
+      
       const result = await generator(prompt, {
-        max_new_tokens: 200,
-        temperature: 0.7,
+        max_new_tokens: 260,
+        temperature: 0.6,
         do_sample: true,
+        repetition_penalty: 1.2,
+        pad_token_id: 50256
       });
       
+      // Extract and clean the generated text
       let generated = result[0].generated_text.replace(prompt, '').trim();
-      if (generated.length < 100) {
-        return generateMethodology(); // Fallback to template
+      
+      // Clean up the generated text
+      generated = generated.replace(/^\s*The\s+research\s+methodology\s+follows\s+a\s*/i, '');
+      generated = generated.split('\n\n')[0]; // Take first substantial paragraph
+      
+      // If the generated content is too short, fall back to template
+      if (generated.length < 120) {
+        return generateMethodology();
       }
-      return `## Methodology\n\n${generated}`;
+      
+      // Structure the AI-generated content properly
+      const structuredContent = `## Methodology
+
+### Research Approach
+The research methodology follows a ${generated}
+
+### System Design
+The system design phase employs:
+
+1. **Architectural Planning**
+   - Modular architecture design for scalability and maintainability
+   - Component-based structure ensuring separation of concerns
+   - Database schema design optimized for ${projectType.toLowerCase()} requirements
+
+2. **Design Principles**
+   - User-centered design approach prioritizing usability and accessibility
+   - Responsive design ensuring cross-platform compatibility
+   - Security-first design with data protection and privacy considerations
+
+3. **Technology Stack Selection**
+   - Frontend: React with TypeScript for type safety and modern development
+   - Styling: Tailwind CSS for consistent and responsive design
+   - State Management: Modern React patterns with hooks and context
+
+### Implementation Strategy
+The development process follows an iterative approach:
+
+1. **Phase 1: Foundation Setup**
+   - Project initialization and development environment configuration
+   - Core component architecture and basic UI framework
+
+2. **Phase 2: Feature Development**
+   - Implementation of core functionality based on ${title}
+   - Integration of AI-powered features and user interfaces
+   - Progressive enhancement of user experience
+
+3. **Phase 3: Integration and Optimization**
+   - System integration testing and performance optimization
+   - Cross-browser compatibility and responsive design refinement
+
+### Testing and Validation
+Quality assurance methodology includes:
+- Unit testing for individual components and functions
+- Integration testing for system workflow validation
+- User acceptance testing to ensure requirements fulfillment
+- Performance testing under various load conditions`;
+      
+      return structuredContent;
     } catch (error) {
       console.error('ML Methodology generation failed:', error);
       return generateMethodology();
