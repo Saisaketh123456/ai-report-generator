@@ -61,7 +61,7 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
       const generatedReport = {
         title: formData.title,
         abstract: generateAbstract(formData.problemStatement, formData.projectType),
-        introduction: generateIntroduction(formData.title, formData.problemStatement),
+        introduction: generateIntroduction(formData.title, formData.problemStatement, formData.projectType),
         methodology: generateMethodology(),
         implementation: generateImplementation(),
         results: generateResults(),
@@ -80,26 +80,27 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
     return `This ${projectType.toLowerCase()} addresses ${problem.toLowerCase()}. The research presents a comprehensive solution utilizing modern technologies and methodologies. The implementation demonstrates effective results with significant improvements in efficiency and performance. The findings contribute to the advancement of the field and provide practical applications for real-world scenarios.`;
   };
 
-  const generateIntroduction = (title: string, problem: string) => {
+  const generateIntroduction = (title: string, problem: string, projectType: string = "project") => {
     return `## Introduction
 
-The ${title} project emerges from the critical need to address ${problem.toLowerCase()}. In today's rapidly evolving technological landscape, this challenge has become increasingly significant for organizations and researchers alike.
+The ${title} emerges from the critical need to address ${problem}. In today's rapidly evolving technological landscape, this challenge has become increasingly significant for organizations and researchers working in this domain.
 
 ### Background
-The current state of the field presents several limitations and opportunities for improvement. Existing solutions often fall short in addressing the complex requirements of modern applications.
+Current approaches in this field often face limitations in terms of efficiency, scalability, and user satisfaction. The existing solutions frequently fail to address the complex requirements and emerging demands of modern ${projectType.toLowerCase()} implementations.
 
 ### Problem Statement
 ${problem}
 
 ### Objectives
-The primary objectives of this project include:
-- Developing an innovative solution to address the identified problem
-- Implementing efficient algorithms and methodologies
-- Evaluating performance and effectiveness
-- Providing practical recommendations for future work
+The primary objectives of this ${projectType.toLowerCase()} include:
+- Developing an innovative and effective solution to address the identified problem
+- Implementing robust methodologies and cutting-edge technologies
+- Achieving measurable improvements in performance and user experience
+- Conducting comprehensive evaluation and testing of the proposed solution
+- Providing actionable insights and recommendations for practical implementation
 
 ### Scope
-This project encompasses the design, development, and evaluation of a comprehensive solution, focusing on scalability, reliability, and user experience.`;
+This ${projectType.toLowerCase()} encompasses the complete lifecycle from initial research and design through development, implementation, and thorough evaluation, with a focus on delivering a scalable, reliable, and user-centric solution.`;
   };
 
   const generateMethodology = () => {
@@ -359,21 +360,62 @@ graph LR
 
   const generateIntroductionML = async (title: string, problem: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a detailed introduction for a ${projectType.toLowerCase()} titled "${title}" that addresses: ${problem}. Include background, objectives, and scope. Introduction:`;
+      // Enhanced prompt for better introduction generation with structure
+      const prompt = `Write a comprehensive introduction section for a ${projectType} titled "${title}" that addresses this problem: "${problem}". 
+
+Structure the introduction with the following subsections:
+1. Background - Current state and limitations
+2. Problem Statement - The specific issue being addressed
+3. Objectives - Clear, specific goals (5 bullet points)
+4. Scope - What the project covers
+
+Keep it professional and detailed. Introduction:
+
+### Background
+The current landscape of`;
+      
       const result = await generator(prompt, {
-        max_new_tokens: 200,
-        temperature: 0.7,
+        max_new_tokens: 250,
+        temperature: 0.6,
         do_sample: true,
+        repetition_penalty: 1.1,
+        pad_token_id: 50256
       });
       
+      // Extract and clean the generated text
       let generated = result[0].generated_text.replace(prompt, '').trim();
-      if (generated.length < 100) {
-        return generateIntroduction(title, problem); // Fallback to template
+      
+      // Clean up the generated text
+      generated = generated.split('\n\n')[0]; // Take first substantial paragraph
+      
+      // If the generated content is too short, fall back to template
+      if (generated.length < 150) {
+        return generateIntroduction(title, problem, projectType);
       }
-      return `## Introduction\n\n${generated}`;
+      
+      // Structure the AI-generated content properly
+      const structuredContent = `## Introduction
+
+The ${title} emerges from the critical need to address ${problem}. ${generated}
+
+### Problem Statement
+${problem}
+
+### Objectives
+The primary objectives of this ${projectType.toLowerCase()} include:
+- Developing an innovative and effective solution to address the identified problem
+- Implementing robust methodologies and cutting-edge technologies
+- Achieving measurable improvements in performance and user experience
+- Conducting comprehensive evaluation and testing of the proposed solution
+- Providing actionable insights and recommendations for practical implementation
+
+### Scope
+This ${projectType.toLowerCase()} encompasses the complete lifecycle from initial research and design through development, implementation, and thorough evaluation, with a focus on delivering a scalable, reliable, and user-centric solution.`;
+      
+      return structuredContent;
     } catch (error) {
       console.error('ML Introduction generation failed:', error);
-      return generateIntroduction(title, problem);
+      return generateIntroduction(title, problem, projectType);
     }
   };
 
