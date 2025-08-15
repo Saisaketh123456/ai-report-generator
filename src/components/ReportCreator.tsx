@@ -232,8 +232,7 @@ Potential areas for future enhancement include:
 - Enhanced analytics and reporting
 - Community-driven feature development
 
-### Final Remarks
-The project contributes valuable insights to the field and provides a solid foundation for future research and development. The implemented solution offers practical benefits for users while advancing the state of the art in the domain.`;
+`;
   };
 
   const generateDiagrams = () => {
