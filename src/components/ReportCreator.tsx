@@ -60,7 +60,7 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
       // Fallback to template generation
       const generatedReport = {
         title: formData.title,
-        abstract: generateAbstract(formData.problemStatement),
+        abstract: generateAbstract(formData.problemStatement, formData.projectType),
         introduction: generateIntroduction(formData.title, formData.problemStatement),
         methodology: generateMethodology(),
         implementation: generateImplementation(),
@@ -76,8 +76,8 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
     }
   };
 
-  const generateAbstract = (problem: string) => {
-    return `This project addresses ${problem.toLowerCase()}. The research presents a comprehensive solution utilizing modern technologies and methodologies. The implementation demonstrates effective results with significant improvements in efficiency and performance. The findings contribute to the advancement of the field and provide practical applications for real-world scenarios.`;
+  const generateAbstract = (problem: string, projectType: string = "project") => {
+    return `This ${projectType.toLowerCase()} addresses ${problem.toLowerCase()}. The research presents a comprehensive solution utilizing modern technologies and methodologies. The implementation demonstrates effective results with significant improvements in efficiency and performance. The findings contribute to the advancement of the field and provide practical applications for real-world scenarios.`;
   };
 
   const generateIntroduction = (title: string, problem: string) => {
@@ -322,22 +322,38 @@ graph LR
   // ML-powered generation functions
   const generateAbstractML = async (problem: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a professional abstract for a ${projectType.toLowerCase()} that addresses: ${problem}. Abstract:`;
+      // Enhanced prompt for better abstract generation
+      const prompt = `Write a comprehensive academic abstract for a ${projectType} project that addresses the following problem: "${problem}". The abstract should include: 1) Problem statement, 2) Methodology overview, 3) Key findings, 4) Significance. Keep it professional and concise (150-200 words).\n\nAbstract: This ${projectType} project investigates`;
+      
       const result = await generator(prompt, {
-        max_new_tokens: 150,
-        temperature: 0.7,
+        max_new_tokens: 180,
+        temperature: 0.6,
         do_sample: true,
+        repetition_penalty: 1.1,
+        pad_token_id: 50256
       });
       
       // Extract and clean the generated text
       let generated = result[0].generated_text.replace(prompt, '').trim();
-      if (generated.length < 50) {
-        return generateAbstract(problem); // Fallback to template
+      
+      // Clean up the generated text
+      generated = generated.replace(/^\s*This\s+/i, 'This ');
+      generated = generated.split('\n')[0]; // Take only first paragraph
+      
+      // Ensure it starts properly
+      if (!generated.toLowerCase().startsWith('this')) {
+        generated = `This ${projectType.toLowerCase()} project investigates ${generated}`;
       }
+      
+      // Check quality and length
+      if (generated.length < 80 || generated.length > 400) {
+        return generateAbstract(problem, projectType); // Fallback to enhanced template
+      }
+      
       return generated;
     } catch (error) {
       console.error('ML Abstract generation failed:', error);
-      return generateAbstract(problem);
+      return generateAbstract(problem, projectType);
     }
   };
 
