@@ -441,18 +441,70 @@ This ${projectType.toLowerCase()} encompasses the complete lifecycle from initia
 
   const generateImplementationML = async (title: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write an implementation section for a ${projectType.toLowerCase()} titled "${title}". Include system architecture, key features, and challenges. Implementation:`;
+      // Enhanced prompt for better implementation generation with structure
+      const prompt = `Write a comprehensive implementation section for a ${projectType} titled "${title}". 
+
+Structure the implementation with the following subsections:
+1. System Architecture - layered architecture approach with frontend, backend, and data layers
+2. Key Features - core functionality, user interface, and performance optimization
+3. Challenges and Solutions - implementation challenges and how they were resolved
+
+Keep it professional and detailed. Implementation:
+
+### System Architecture
+The implementation follows a`;
+      
       const result = await generator(prompt, {
-        max_new_tokens: 200,
-        temperature: 0.7,
+        max_new_tokens: 280,
+        temperature: 0.6,
         do_sample: true,
+        repetition_penalty: 1.2,
+        pad_token_id: 50256
       });
       
+      // Extract and clean the generated text
       let generated = result[0].generated_text.replace(prompt, '').trim();
-      if (generated.length < 100) {
-        return generateImplementation(); // Fallback to template
+      
+      // Clean up the generated text
+      generated = generated.replace(/^\s*The\s+implementation\s+follows\s+a\s*/i, '');
+      generated = generated.split('\n\n')[0]; // Take first substantial paragraph
+      
+      // If the generated content is too short, fall back to template
+      if (generated.length < 120) {
+        return generateImplementation();
       }
-      return `## Implementation\n\n${generated}`;
+      
+      // Structure the AI-generated content properly
+      const structuredContent = `## Implementation
+
+### System Architecture
+The implementation follows a ${generated}
+
+### Key Features
+The implemented solution includes:
+
+1. **Core Functionality**
+   - Primary feature implementation based on ${title}
+   - Advanced algorithms and processing capabilities
+   - Real-time data handling and management
+
+2. **User Interface**
+   - Intuitive and responsive design optimized for ${projectType.toLowerCase()}
+   - Accessibility compliance and cross-platform compatibility
+   - Modern UI/UX principles implementation
+
+3. **Performance Optimization**
+   - Efficient algorithms tailored for this ${projectType.toLowerCase()}
+   - Caching mechanisms and memory optimization
+   - Load balancing and horizontal scaling capabilities
+
+### Challenges and Solutions
+During implementation, several challenges were identified and addressed:
+- Performance bottlenecks resolved through code optimization and algorithm improvements
+- Security vulnerabilities addressed through comprehensive testing and code review
+- Scalability issues managed through architectural improvements and cloud-native design patterns`;
+      
+      return structuredContent;
     } catch (error) {
       console.error('ML Implementation generation failed:', error);
       return generateImplementation();
