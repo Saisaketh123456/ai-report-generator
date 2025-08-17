@@ -619,11 +619,13 @@ Conclusion: This project`;
 This ${projectType.toLowerCase()} successfully demonstrates a comprehensive approach to addressing ${problem.toLowerCase()}. The project showcases innovative solutions through thoughtful design and implementation, resulting in a robust system that meets its intended objectives. The development process emphasized user-centered design principles while maintaining technical excellence and scalability. Through careful consideration of both functional requirements and user experience, the project delivers meaningful value and establishes a solid foundation for practical application. The work contributes significantly to the field by providing effective solutions that address real-world challenges while maintaining high standards of quality and performance.`;
       }
       
-      // Format as proper conclusion section with paragraph
-      return `## Conclusion
+      // Format as proper conclusion section with paragraph and remove disallowed subsections
+      const paragraph = (`This project ${generated}`)
+        .replace(/###\s*(Key Achievements|Future Work)[\s\S]*?(?=^#{1,6}\s|$)/gmi, '')
+        .replace(/\n{2,}/g, '\n\n')
+        .trim();
 
-This project ${generated}`;
-      
+      return `## Conclusion\n\n${paragraph}`;
     } catch (error) {
       console.error('ML Conclusion generation failed:', error);
       // Fallback paragraph-style conclusion
