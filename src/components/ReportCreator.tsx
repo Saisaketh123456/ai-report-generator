@@ -46,7 +46,7 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
         implementation: await generateImplementationML(formData.title, formData.projectType, generator),
         results: await generateResultsML(formData.title, formData.projectType, generator),
         conclusion: await generateConclusionML(formData.title, formData.problemStatement, formData.projectType, generator),
-        diagrams: generateDiagrams(),
+        diagrams: generateDiagrams(formData.title, formData.projectType),
         references: generateReferences()
       };
       
@@ -66,7 +66,7 @@ const ReportCreator = ({ onBack, onReportGenerated, userEmail, onSignOut }: Repo
         implementation: generateImplementation(),
         results: generateResults(),
         conclusion: generateConclusion(),
-        diagrams: generateDiagrams(),
+        diagrams: generateDiagrams(formData.title, formData.projectType),
         references: generateReferences()
       };
       
@@ -223,20 +223,61 @@ This project successfully addresses the identified challenges through innovative
 `;
   };
 
-  const generateDiagrams = () => {
+  const generateDiagrams = (title?: string, projectType?: string) => {
+    const projectName = title || 'System';
+    const type = projectType || 'Application';
+    
+    // Generate project-specific component names based on title
+    const getProjectComponents = (title: string) => {
+      const titleWords = title.toLowerCase().split(' ');
+      const isAI = titleWords.some(word => ['ai', 'artificial', 'intelligence', 'ml', 'machine', 'learning'].includes(word));
+      const isWeb = titleWords.some(word => ['web', 'website', 'portal', 'dashboard'].includes(word));
+      const isManagement = titleWords.some(word => ['management', 'manager', 'admin', 'system'].includes(word));
+      const isAnalytics = titleWords.some(word => ['analytics', 'analysis', 'data', 'report'].includes(word));
+      
+      if (isAI) {
+        return {
+          mainModules: ['ML Processing Module', 'Data Preprocessing', 'Model Training', 'Prediction Engine'],
+          subComponents: ['Feature Extraction', 'Model Validation', 'Result Processing', 'Performance Metrics']
+        };
+      } else if (isWeb) {
+        return {
+          mainModules: ['Frontend Interface', 'Content Management', 'User Management', 'API Gateway'],
+          subComponents: ['Navigation System', 'Content Editor', 'User Dashboard', 'Authentication']
+        };
+      } else if (isManagement) {
+        return {
+          mainModules: ['Management Dashboard', 'Resource Manager', 'User Administration', 'Reporting Module'],
+          subComponents: ['Resource Allocation', 'User Permissions', 'Data Visualization', 'Export Tools']
+        };
+      } else if (isAnalytics) {
+        return {
+          mainModules: ['Data Collection', 'Analytics Engine', 'Visualization Module', 'Report Generator'],
+          subComponents: ['Data Validation', 'Statistical Analysis', 'Chart Builder', 'Export Engine']
+        };
+      } else {
+        return {
+          mainModules: ['Core Module', 'Processing Engine', 'User Interface', 'Data Manager'],
+          subComponents: ['Input Processor', 'Business Logic', 'Output Handler', 'Storage Manager']
+        };
+      }
+    };
+    
+    const components = getProjectComponents(title || '');
+    
     return `## System Diagrams
 
-### Architecture Diagram
+### ${projectName} Architecture Diagram
 \`\`\`mermaid
 graph TB
-    A[User Interface] --> B[Application Layer]
-    B --> C[Business Logic]
-    C --> D[Data Access Layer]
-    D --> E[Database]
+    A[${projectName} Interface] --> B[Application Layer]
+    B --> C[${components.mainModules[0]}]
+    C --> D[Data Processing Layer]
+    D --> E[${projectName} Database]
     
     F[Authentication Service] --> B
-    G[External APIs] --> C
-    H[Cache Layer] --> C
+    G[${components.mainModules[1]}] --> C
+    H[Cache & Storage] --> C
     
     style A fill:#e1f5fe
     style B fill:#f3e5f5
@@ -245,41 +286,41 @@ graph TB
     style E fill:#fce4ec
 \`\`\`
 
-### Data Flow Diagram
+### ${projectName} Data Flow Diagram
 \`\`\`mermaid
 sequenceDiagram
     participant U as User
-    participant UI as Frontend
-    participant API as Backend API
-    participant DB as Database
+    participant UI as ${projectName} Interface
+    participant API as ${type} API
+    participant DB as ${projectName} Database
     
-    U->>UI: Input Data
-    UI->>API: Send Request
-    API->>DB: Query Data
+    U->>UI: User Input
+    UI->>API: Process Request
+    API->>DB: Store/Retrieve Data
     DB->>API: Return Results
     API->>UI: Send Response
-    UI->>U: Display Results
+    UI->>U: Display Output
 \`\`\`
 
-### Component Structure
+### ${projectName} Component Structure
 \`\`\`mermaid
 graph LR
-    A[Main Application] --> B[Authentication Module]
-    A --> C[Dashboard Module]
-    A --> D[Report Generator]
-    A --> E[Export Module]
+    A[${projectName} Main] --> B[${components.mainModules[0]}]
+    A --> C[${components.mainModules[1]}]
+    A --> D[${components.mainModules[2]}]
+    A --> E[${components.mainModules[3]}]
     
-    B --> F[Login Component]
-    B --> G[Registration Component]
+    B --> F[${components.subComponents[0]}]
+    B --> G[${components.subComponents[1]}]
     
-    C --> H[Statistics View]
-    C --> I[User Profile]
+    C --> H[${components.subComponents[2]}]
+    C --> I[${components.subComponents[3]}]
     
-    D --> J[Content Generator]
-    D --> K[Template Engine]
+    D --> J[Export Module]
+    D --> K[Settings Manager]
     
-    E --> L[PDF Export]
-    E --> M[Word Export]
+    E --> L[Data Validation]
+    E --> M[Performance Monitor]
     
     style A fill:#bbdefb
     style D fill:#c8e6c9
