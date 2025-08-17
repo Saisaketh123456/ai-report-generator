@@ -603,21 +603,46 @@ During implementation, several challenges were identified and addressed:
 
   const generateConclusionML = async (title: string, problem: string, projectType: string, generator: any) => {
     try {
-      const prompt = `Write a comprehensive conclusion for a ${projectType.toLowerCase()} titled "${title}" that solved: ${problem}. Include key achievements and future work in exactly 5 sentences. Conclusion:`;
+      // Enhanced prompt for paragraph-style conclusion without structured sections
+      const prompt = `Write a comprehensive conclusion paragraph for a ${projectType} titled "${title}" that addresses: ${problem}. 
+
+Write a flowing, professional conclusion that summarizes the project's significance, impact, and overall contribution. Focus on the project's outcomes and value without mentioning specific achievements or future work. Keep it as a cohesive paragraph.
+
+Conclusion: This project`;
+      
       const result = await generator(prompt, {
-        max_new_tokens: 180,
-        temperature: 0.7,
+        max_new_tokens: 200,
+        temperature: 0.6,
         do_sample: true,
+        repetition_penalty: 1.1,
+        pad_token_id: 50256
       });
       
+      // Extract and clean the generated text
       let generated = result[0].generated_text.replace(prompt, '').trim();
-      if (generated.length < 80) {
-        return `This AI-powered technical report generation platform successfully addresses the challenges of traditional manual report writing through innovative automation. The system leverages cutting-edge technologies including Hugging Face Transformers and GPT-2 to deliver intelligent content generation with user-controlled editing capabilities. The implementation demonstrates significant improvements in efficiency, consistency, and quality while reducing the time required for professional documentation. The platform's modern architecture built with React, TypeScript, and Tailwind CSS ensures scalability and maintainability for diverse organizational needs. The project establishes a solid foundation for future AI-assisted content creation and contributes meaningfully to the transformation of technical communication workflows.`; // Fallback to 5-line conclusion
+      
+      // Clean up the generated text
+      generated = generated.replace(/^\s*This\s+project\s*/i, '');
+      
+      // Ensure we have a substantial paragraph
+      if (generated.length < 100) {
+        // Fallback paragraph-style conclusion
+        return `## Conclusion
+
+This ${projectType.toLowerCase()} successfully demonstrates a comprehensive approach to addressing ${problem.toLowerCase()}. The project showcases innovative solutions through thoughtful design and implementation, resulting in a robust system that meets its intended objectives. The development process emphasized user-centered design principles while maintaining technical excellence and scalability. Through careful consideration of both functional requirements and user experience, the project delivers meaningful value and establishes a solid foundation for practical application. The work contributes significantly to the field by providing effective solutions that address real-world challenges while maintaining high standards of quality and performance.`;
       }
-      return generated;
+      
+      // Format as proper conclusion section with paragraph
+      return `## Conclusion
+
+This project ${generated}`;
+      
     } catch (error) {
       console.error('ML Conclusion generation failed:', error);
-      return `This AI-powered technical report generation platform successfully addresses the challenges of traditional manual report writing through innovative automation. The system leverages cutting-edge technologies including Hugging Face Transformers and GPT-2 to deliver intelligent content generation with user-controlled editing capabilities. The implementation demonstrates significant improvements in efficiency, consistency, and quality while reducing the time required for professional documentation. The platform's modern architecture built with React, TypeScript, and Tailwind CSS ensures scalability and maintainability for diverse organizational needs. The project establishes a solid foundation for future AI-assisted content creation and contributes meaningfully to the transformation of technical communication workflows.`;
+      // Fallback paragraph-style conclusion
+      return `## Conclusion
+
+This ${projectType.toLowerCase()} successfully demonstrates a comprehensive approach to addressing the identified challenges through innovative design and implementation. The project showcases effective solutions while maintaining focus on user experience and technical excellence. Through careful development and testing, the system delivers meaningful functionality that meets its core objectives. The work establishes a solid foundation for practical application while contributing valuable insights to the field. The project represents a significant step forward in addressing real-world challenges through thoughtful technology implementation.`;
     }
   };
 
